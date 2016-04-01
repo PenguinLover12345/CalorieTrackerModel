@@ -1,8 +1,11 @@
 def main():
+    #Each user profile ---- need to add to database or app directly later
+    
     mealRatios = [0.2, 0.3, 0.4, 0.1]; #Breakfast, Lunch, Dinner, Snack
     calorieGoal = 2000 #Calorie goal
     calorieCurrent = 0 #Current amount of calories
     mealCalories = [0, 0, 0, 0] #calorie allocation
+    mealCurrent = [0, 0, 0, 0] #current meals
     
     updateMealCalories(mealRatios, calorieGoal, mealCalories)
     printInformation(mealRatios, mealCalories)
@@ -11,9 +14,21 @@ def main():
     updateMealCalories(mealRatios, calorieGoal, mealCalories)
     printInformation(mealRatios, mealCalories)
     
-    inputFood(calorieCurrent, 300, 0)
+    inputFood(calorieCurrent, mealCurrent, 300, 0)
 
-
+def calculateNewRatios(mealRatios, calorieGoal, mealCalories, mealCurrent): #find the different calorie intake and multiply them by a weight
+    #at end of day
+    
+    weight = 0.5;
+    diff = [0, 0, 0, 0]
+    sum = 0;
+    for i in xrange(0, len(mealCalories)):
+        diff[i] = mealCurrent[i] - mealCalories[i]
+        sum += mealCalories[i] + (diff[i] * weight)
+    
+    for i in xrange(0, len(mealCalories)):
+        mealRatios[i] = (mealCalories[i] + (diff[i] * weight)) / sum
+    
 def updateMealCalories(mealRatios, calorieGoal, mealCalories):
     for i in xrange(0, len(mealRatios)):
         mealCalories[i] = calorieGoal * mealRatios[i]
@@ -26,15 +41,17 @@ def updateMealRatios(mealRatios):#, newMealRatios) #How are we going to update t
     
     return mealRatios #return unneeded since pass by reference
 
-def inputFood(calorieCurrent, calorieInput, meal): #0 = breakfast, 1 = lunch, 2 = dinner, 3 = snack
+def inputFood(calorieCurrent, mealCurrent, calorieInput, meal): #0 = breakfast, 1 = lunch, 2 = dinner, 3 = snack
     calorieCurrent += calorieInput
+    mealCurrent[meal] = calorieInput
     
 
 def printInformation(mealRatios, mealCalories):
     print mealRatios
     print mealCalories
     
-
-
+def getCalorieGoal(calorieGoal):
+    calorieGoal = 2000;
+    #GET TDEE FORMULA
 
 main()
