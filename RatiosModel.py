@@ -14,10 +14,11 @@ def main():
     updateMealCalories(mealRatios, calorieGoal, mealCalories)
     printInformation(mealRatios, mealCalories)
     
-    inputFood(calorieCurrent, mealCurrent, 300, 0)
+    inputFood(mealRatios, calorieCurrent, mealCurrent, 300, 0)
+    calculateNewRatios(mealRatios, calorieGoal, mealCalories, mealCurrent)
 
 def calculateNewRatios(mealRatios, calorieGoal, mealCalories, mealCurrent): #find the different calorie intake and multiply them by a weight
-    #at end of day
+    #after each meal  assume 0s are intential skips
     
     weight = 0.5;
     diff = [0, 0, 0, 0]
@@ -28,6 +29,8 @@ def calculateNewRatios(mealRatios, calorieGoal, mealCalories, mealCurrent): #fin
     
     for i in xrange(0, len(mealCalories)):
         mealRatios[i] = (mealCalories[i] + (diff[i] * weight)) / sum
+    updateMealCalories(mealRatios, calorieGoal, mealCalories)
+    
     
 def updateMealCalories(mealRatios, calorieGoal, mealCalories):
     for i in xrange(0, len(mealRatios)):
@@ -41,9 +44,10 @@ def updateMealRatios(mealRatios):#, newMealRatios) #How are we going to update t
     
     return mealRatios #return unneeded since pass by reference
 
-def inputFood(calorieCurrent, mealCurrent, calorieInput, meal): #0 = breakfast, 1 = lunch, 2 = dinner, 3 = snack
+def inputFood(mealRatios, calorieGoal, calorieCurrent, mealCurrent, calorieInput, meal): #0 = breakfast, 1 = lunch, 2 = dinner, 3 = snack
     calorieCurrent += calorieInput
     mealCurrent[meal] = calorieInput
+    calculateNewRatios()
     
 
 def printInformation(mealRatios, mealCalories):
