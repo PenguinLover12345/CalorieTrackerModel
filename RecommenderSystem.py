@@ -15,7 +15,7 @@ def main():
 def recommend(currentCalorieMeal, meal, diningHall):
     goal = "SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i UNION SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i ORDER by ABS(%i - calories)"
 
-    cnx = mysql.connector.connect(user='admin', database='employees')
+    cnx = mysql.connector.connect(user='admin', database='diningHall')
     cursor = cnx.cursor()
     cursor.execute(goal, (diningHall, meal-100, meal, diningHall, meal, meal+100, meal))
 
