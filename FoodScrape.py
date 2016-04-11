@@ -57,7 +57,7 @@ for i in range(0,len(href)):
         'location': 'Westend'
         }, ignore_index=True)
     print i
-df0.to_csv('Westend.csv', sep=',', encoding='utf-8')
+df0.to_csv('Datasets/Westend.csv', sep=',', encoding='utf-8')
 
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=18&locationName=BURGER+%2737+AT+SQUIRES&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Daily+Items"
@@ -99,7 +99,7 @@ for i in range(0,len(href)):
         'location':'Burger37'
         }, ignore_index=True)
     print i
-df1.to_csv('Burger_37.csv', sep=',', encoding='utf-8')
+df1.to_csv('Datasets/Burger_37.csv', sep=',', encoding='utf-8')
 
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=07&locationName=DEET%27S+PLACE++AT+DIETRICK&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Daily+Items"
@@ -141,7 +141,7 @@ for i in range(0,len(href)):
         'location':'Deets'
         }, ignore_index=True)
     print i
-df2.to_csv('Deets.csv', sep=',', encoding='utf-8')
+df2.to_csv('Datasets/Deets.csv', sep=',', encoding='utf-8')
 
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=15&locationName=D2+AT+DIETRICK+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Breakfast"
@@ -264,7 +264,7 @@ for i in range(0,len(href)):
         }, ignore_index=True)
     print i     
     
-df3.to_csv('D2.csv', sep=',', encoding='utf-8')
+df3.to_csv('Datasets/D2.csv', sep=',', encoding='utf-8')
 
 
 
@@ -349,7 +349,7 @@ for i in range(0,len(href)):
         }, ignore_index=True)
     print i 
     
-df4.to_csv('Dxpress.csv', sep=',', encoding='utf-8')
+df4.to_csv('Datasets/Dxpress.csv', sep=',', encoding='utf-8')
 
 
 
@@ -393,7 +393,7 @@ for i in range(0,len(href)):
         }, ignore_index=True)
     print i 
     
-df5.to_csv('Grill_Owens.csv', sep=',', encoding='utf-8')
+df5.to_csv('Datasets/Grill_Owens.csv', sep=',', encoding='utf-8')
 
 
 
@@ -477,7 +477,7 @@ for i in range(0,len(href)):
         }, ignore_index=True)
     print i 
     
-df6.to_csv('Turner.csv', sep=',', encoding='utf-8')
+df6.to_csv('Datasets/Turner.csv', sep=',', encoding='utf-8')
 
 
 
@@ -562,7 +562,7 @@ for i in range(0,len(href)):
         }, ignore_index=True)
     print i 
     
-df7.to_csv('Vet_Cafe.csv', sep=',', encoding='utf-8')
+df7.to_csv('Datasets/Vet_Cafe.csv', sep=',', encoding='utf-8')
 
 
 conn = MySQLdb.connect(host="localhost",    # your host, usually localhost
