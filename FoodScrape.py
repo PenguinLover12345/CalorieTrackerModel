@@ -220,7 +220,7 @@ for i in range(0,len(href)):
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'lunch',
-        'location','D2'
+        'location':'D2'
         }, ignore_index=True)
     print i 
 
