@@ -2,23 +2,22 @@ import urllib
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 import datetime
-import mysql.connector
-from sqlalchemy import create_engine
+import MySQLdb
 
 
 urlh = "http://foodpro.dsa.vt.edu/FoodPro.NET/"
 dtdate = str(datetime.date.today()).split("-")
 fff = lambda x: 'None' if x == None else x.text
-df = pd.DataFrame(columns=('food_name', 'serving_size', 'calories','fat_type',
+df0 = pd.DataFrame(columns=('food_name', 'serving_size', 'calories','fat_type',
     'total_fat','sat_fat','trans_fat','cholesterol','sodium','protein',
-    'total_carbon','fiber','sugar','calcium','iron','vaiu','vc','ingredient','meal'))
-df1 = df
-df2 = df
-df3 = df
-df4 = df
-df5 = df
-df6 = df
-df7 = df
+    'total_carbon','fiber','sugar','calcium','iron','vaiu','vc','ingredient','meal','location'))
+df1 = df0
+df2 = df0
+df3 = df0
+df4 = df0
+df5 = df0
+df6 = df0
+df7 = df0
 
 url = "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=16&locationName=WEST+END+MKT+AT+COCHRANE+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Daily+Items"
 html = urllib.urlopen(url).read()
@@ -35,7 +34,7 @@ for i in range(0,len(href)):
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
     if s!=[] :
-        df = df.append({
+        df0 = df0.append({
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
         'calories':s[2].split(u'\xa0')[1],
@@ -54,10 +53,11 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'all'
+        'meal':'all',
+        'location': 'Westend'
         }, ignore_index=True)
     print i
-df.to_csv('Westend.csv', sep=',', encoding='utf-8')
+df0.to_csv('Westend.csv', sep=',', encoding='utf-8')
 
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=18&locationName=BURGER+%2737+AT+SQUIRES&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Daily+Items"
@@ -95,7 +95,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'all'
+        'meal':'all',
+        'location':'Burger37'
         }, ignore_index=True)
     print i
 df1.to_csv('Burger_37.csv', sep=',', encoding='utf-8')
@@ -136,7 +137,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'all'
+        'meal':'all',
+        'location':'Deets'
         }, ignore_index=True)
     print i
 df2.to_csv('Deets.csv', sep=',', encoding='utf-8')
@@ -177,7 +179,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'breakfast'
+        'meal':'breakfast',
+        'location':'D2'
         }, ignore_index=True)
     print i
     
@@ -216,7 +219,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'lunch'
+        'meal':'lunch',
+        'location','D2'
         }, ignore_index=True)
     print i 
 
@@ -255,7 +259,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'dinner'
+        'meal':'dinner',
+        'location':'D2'
         }, ignore_index=True)
     print i     
     
@@ -299,7 +304,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'breakfast'
+        'meal':'breakfast',
+        'location':'Dxpress'
         }, ignore_index=True)
     print i
     
@@ -338,7 +344,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'lunch & dinner'
+        'meal':'lunch & dinner',
+        'location':'Dxpress'
         }, ignore_index=True)
     print i 
     
@@ -381,11 +388,12 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'all'
+        'meal':'all',
+        'location':'Grill_Owens'
         }, ignore_index=True)
     print i 
     
-df5.to_csv('Owens.csv', sep=',', encoding='utf-8')
+df5.to_csv('Grill_Owens.csv', sep=',', encoding='utf-8')
 
 
 
@@ -424,7 +432,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'breakfast'
+        'meal':'breakfast',
+        'location':'Turner'
         }, ignore_index=True)
     print i
     
@@ -463,7 +472,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'lunch & dinner'
+        'meal':'lunch & dinner',
+        'location':'turner'
         }, ignore_index=True)
     print i 
     
@@ -507,7 +517,8 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'breakfast'
+        'meal':'breakfast',
+        'location':'Vet_Cafe'
         }, ignore_index=True)
     print i
     
@@ -546,9 +557,22 @@ for i in range(0,len(href)):
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
         'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'lunch'
+        'meal':'lunch',
+        'location':'Vet_Cafe'
         }, ignore_index=True)
     print i 
     
 df7.to_csv('Vet_Cafe.csv', sep=',', encoding='utf-8')
 
+
+conn = MySQLdb.connect(host="localhost",    # your host, usually localhost
+                     user="root",         # your username
+                     passwd="Wang8812321",  # your password
+                     db="FlaskApp")        # name of the data base
+
+df = pd.concat([df,df1,df2,df3,df4,df5,df6,df7])
+
+
+df.to_sql(con=conn,name='Food',if_exists='replace', flavor='mysql')
+
+print "Finished"
