@@ -12,7 +12,7 @@ from sqlalchemy import create_engine
 def main():
     x = 0
 
-def recommend(currentCalorieMeal, meal, diningHall):
+def recommendNoPreference(currentCalorieMeal, meal, diningHall, preference):
     goal = "SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i UNION SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i ORDER by ABS(%i - calories)"
 
     cnx = mysql.connector.connect(user='admin', database='diningHall')
@@ -25,12 +25,34 @@ def recommend(currentCalorieMeal, meal, diningHall):
     recommendations = pd.Dataframe(cursor.fetchall())
     
     return recommendations
-     #for row in diningHallInformation:
-#s          if row[3] 
-      #Instead of searching csv, we could do a select statement in SQL such that
-      #we select meals that are in a calorie limit.  Should we have it as a ranking
-      #system? limited ranking system?  
+    
+
+def recommend(currentCalorieMeal, meal, diningHall, preference):
       
+      
+#Algorithm
+
+# get preference list, p
+# get goal and filter out what is not in the goal
+# 
+# each item's weight : sum(t(i) * p(i)) + abs(cal - goal) / j
+# where each t is a tag the item has and j is the total number of tags an item 
+# has
+# 
+
+    goal = "SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i UNION SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i ORDER by ABS(%i - calories)"
+
+    cnx = mysql.connector.connect(user='admin', database='diningHall')
+    cursor = cnx.cursor()
+    cursor.execute(goal, (diningHall, meal-100, meal, diningHall, meal, meal+100, meal))
+
+    recommendations = pd.Dataframe(cursor.fetchall())
+
+    return recommendations
     
+
+def parseTag():
+    tag = 3 #list of tags obtained from database
     
+
 main()
