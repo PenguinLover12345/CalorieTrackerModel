@@ -12,12 +12,12 @@ from sqlalchemy import create_engine
 def main():
     x = 0
 
-def recommendNoPreference(currentCalorieMeal, meal, diningHall, preference):
+def recommendNoPreference(currentCalorieMeal, diningHall, preference):
     goal = "SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i UNION SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i ORDER by ABS(%i - calories)"
 
     cnx = mysql.connector.connect(user='admin', database='diningHall')
     cursor = cnx.cursor()
-    cursor.execute(goal, (diningHall, meal-100, meal, diningHall, meal, meal+100, meal))
+    cursor.execute(goal, (diningHall, currentCalorieMeal-100, currentCalorieMeal, diningHall, currentCalorieMeal, currentCalorieMeal+100, currentCalorieMeal))
 
     #add stuff with cursors --- https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-select.html
     #http://stackoverflow.com/questions/12047193/how-to-convert-sql-query-result-to-pandas-data-structure
@@ -27,7 +27,7 @@ def recommendNoPreference(currentCalorieMeal, meal, diningHall, preference):
     return recommendations
     
 
-def recommend(currentCalorieMeal, meal, diningHall, preference):
+def recommend(currentCalorieMeal, diningHall, preference):
       
       
 #Algorithm
@@ -40,11 +40,11 @@ def recommend(currentCalorieMeal, meal, diningHall, preference):
 # has
 # 
 
-    goal = "SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i UNION SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i ORDER by ABS(%i - calories)"
+    goal = "SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i ORDER by ABS(%i - calories)"
 
     cnx = mysql.connector.connect(user='admin', database='diningHall')
     cursor = cnx.cursor()
-    cursor.execute(goal, (diningHall, meal-100, meal, diningHall, meal, meal+100, meal))
+    cursor.execute(goal, (diningHall, currentCalorieMeal-100, currentCalorieMeal, diningHall, currentCalorieMeal, currentCalorieMeal+100, currentCalorieMeal))
 
     recommendations = pd.Dataframe(cursor.fetchall())
 
