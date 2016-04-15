@@ -12,23 +12,21 @@ from sqlalchemy import create_engine
 def main():
     x = 0
 
-def recommendNoPreference(currentCalorieMeal, diningHall, preference):
-    goal = "SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i UNION SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i ORDER by ABS(%i - calories)"
+#def recommendNoPreference(currentCalorieMeal, diningHall, preference):
+#    goal = "SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i UNION SELECT * FROM %s WHERE 'calories' >= %i AND 'calories' <= %i ORDER by ABS(%i - calories)"
 
-    cnx = mysql.connector.connect(user='admin', database='diningHall')
-    cursor = cnx.cursor()
-    cursor.execute(goal, (diningHall, currentCalorieMeal-100, currentCalorieMeal, diningHall, currentCalorieMeal, currentCalorieMeal+100, currentCalorieMeal))
+#    cnx = mysql.connector.connect(user='admin', database='diningHall')
+#    cursor = cnx.cursor()
+#    cursor.execute(goal, (diningHall, currentCalorieMeal-100, currentCalorieMeal, diningHall, currentCalorieMeal, currentCalorieMeal+100, currentCalorieMeal))
 
     #add stuff with cursors --- https://dev.mysql.com/doc/connector-python/en/connector-python-example-cursor-select.html
     #http://stackoverflow.com/questions/12047193/how-to-convert-sql-query-result-to-pandas-data-structure
     
-    recommendations = pd.Dataframe(cursor.fetchall())
+#    recommendations = pd.Dataframe(cursor.fetchall())
     
-    return recommendations
+#    return recommendations
     
-
-def recommend(currentCalorieMeal, diningHall, preference):
-      
+def recommend(currentCalorieMeal, diningHall, preference, bans):
       
 #Algorithm
 
@@ -47,6 +45,21 @@ def recommend(currentCalorieMeal, diningHall, preference):
     cursor.execute(goal, (diningHall, currentCalorieMeal-100, currentCalorieMeal, diningHall, currentCalorieMeal, currentCalorieMeal+100, currentCalorieMeal))
 
     recommendations = pd.Dataframe(cursor.fetchall())
+    
+    recommendations['weight'] = 0
+    
+    for i, row in recommendations.iterrows():
+        sum = 2
+        recommendations.xs(i)['weight'] = sum
+        
+    
+    recommendations.sort_values(['weight'], ascending=[False])
+        
+        
+        
+    
+    
+    
 
     return recommendations
     
