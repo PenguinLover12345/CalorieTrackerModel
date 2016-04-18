@@ -44,28 +44,31 @@ def recommend(currentCalorieMeal, diningHall, preference, bans):
     cursor = cnx.cursor()
     cursor.execute(goal, (diningHall, currentCalorieMeal-100, currentCalorieMeal, diningHall, currentCalorieMeal, currentCalorieMeal+100, currentCalorieMeal))
 
-    recommendations = pd.Dataframe(cursor.fetchall())
+    df = pd.Dataframe(cursor.fetchall())
     
-    recommendations['weight'] = 0
+    df['weight'] = 0
+    banned = []
     
-    for i, row in recommendations.iterrows():
-        sum = 2
-        recommendations.xs(i)['weight'] = sum
-        
-    
-    recommendations.sort_values(['weight'], ascending=[False])
-        
-        
-        
-    
-    
-    
+    for i in bans: #find list of banned foods
+        for j, row in df.iterrows():
+            if i in df.xs(j)['ingredients']:
+                banned.append(df.xs(j))      # add all banned foods into a list
+    df = df[~df.isin(banned)].dropna()       #remove everything that is banned from main dataframe
+                                             #ask zhang is this is right/better way of doing this
 
-    return recommendations
+    for i, row in df.iterrows():  #calculate weight for each food item
+        sum = 0
+        for key, value in preference.iteritems():    #key value for each preference
+            if key in df.xs(i)['ingredients']:
+                sum = sum + key                     #add weight for each preference
+        c = abs(100 - (df.xs(i)['calories'] - currentCalorieMeal)) / 5      #add number to how close it is to calorie goal
+        df.xs(i)['weight'] = sum + c   
     
+    df.sort_values(['weight'], ascending=[False]) #sort descending order by highest weight
 
-def parseTag():
-    tag = 3 #list of tags obtained from database
-    
+    return df
+                
+
+
 
 main()
