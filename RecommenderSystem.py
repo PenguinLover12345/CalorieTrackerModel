@@ -49,6 +49,9 @@ def recommend(currentCalorieMeal, diningHall, preference, bans):
     df['weight'] = 0
     banned = []
     
+    
+#    ----------LOOK HERE--------
+    #do this in SQL
     for i in bans: #find list of banned foods
         for j, row in df.iterrows():
             if i in df.xs(j)['ingredients']:
@@ -59,13 +62,14 @@ def recommend(currentCalorieMeal, diningHall, preference, bans):
     for i, row in df.iterrows():  #calculate weight for each food item
         sum = 0
         for key, value in preference.iteritems():    #key value for each preference
-            if key in df.xs(i)['ingredients']:
+            if key in df.xs(i)['tag'] or key in df.xs(i)['allergen']:
                 sum = sum + key                     #add weight for each preference
-        c = abs(100 - (df.xs(i)['calories'] - currentCalorieMeal)) / 5      #add number to how close it is to calorie goal
-        df.xs(i)['weight'] = sum + c   
+        c = abs(100 - (df.xs(i)['calories'] - currentCalorieMeal))      #add number to how close it is to calorie goal
+        df.xs(i)['weight'] = sum * c   
     
     df.sort_values(['weight'], ascending=[False]) #sort descending order by highest weight
 
+#--------------------END LOOKING------
     return df
                 
 
