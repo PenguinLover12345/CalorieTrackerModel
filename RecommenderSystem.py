@@ -72,21 +72,6 @@ def recommend(currentCalorieMeal, diningHall, preference, bans):
 #--------------------END LOOKING------
     return df
                 
-                
-
-#r = request.get_json()
-#r = 3
-cal = r["calories"]
-
-banlist = []
-for b in r["bans"]: #create list of bans
-    banlist.append(b)
-
-#dict = {'milk':0, 'wheat':0, 'soy':0, 'cheese':0, 'egg':0, 'beef':0, 'turkey':0, 'chicken':0, 'pork':0, 'peanuts':0, 'veggie':0, 'pizza':0, 'lamb':0, 'onion':0, 'tomato':0, 'cream':0, 'pepper':0, 'shellfish':0, 'gluten':0};
-dict = {}
-
-for d in r["dict"]: #update preference list
-    dict.update (d)
 
 
 
