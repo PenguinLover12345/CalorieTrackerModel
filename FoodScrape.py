@@ -7,10 +7,34 @@ import MySQLdb
 
 urlh = "http://foodpro.dsa.vt.edu/FoodPro.NET/"
 dtdate = str(datetime.date.today()).split("-")
+
 fff = lambda x: 'None' if x == None else x.text
-df0 = pd.DataFrame(columns=('food_name', 'serving_size', 'calories','fat_type',
+
+taglist = [
+'milk',
+'wheat',
+'soy',
+'cheese',
+'egg',
+'beef',
+'turkey',
+'chicken',
+'pork',
+'peanuts',
+'veggie',
+'pizza',
+'lamb',
+'onion',
+'tomato',
+'cream',
+'pepper',
+'shellfish',
+'gluten',
+]
+
+df0 = pd.DataFrame(columns=('food_id','food_name', 'serving_size', 'calories','fat_type',
     'total_fat','sat_fat','trans_fat','cholesterol','sodium','protein',
-    'total_carbon','fiber','sugar','calcium','iron','vaiu','vc','ingredient','meal','location'))
+    'total_carbon','fiber','sugar','calcium','iron','vaiu','vc','meal','location','allergen','tag','ingredient'))
 df1 = df0
 df2 = df0
 df3 = df0
@@ -18,6 +42,8 @@ df4 = df0
 df5 = df0
 df6 = df0
 df7 = df0
+
+loc = 10000
 
 url = "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=16&locationName=WEST+END+MKT+AT+COCHRANE+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Daily+Items"
 html = urllib.urlopen(url).read()
@@ -33,12 +59,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df0 = df0.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -52,13 +90,16 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'all',
-        'location': 'Westend'
+        'meal':'breakfast & lunch & dinner',
+        'location': 'Westend',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i
-df0.to_csv('Datasets/Westend.csv', sep=',', encoding='utf-8')
+    print loc+i+1
+df0.to_csv('Datasets/Westend.csv', sep=',', encoding='utf-8', index=False)
 
+loc += 10000
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=18&locationName=BURGER+%2737+AT+SQUIRES&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Daily+Items"
 html = urllib.urlopen(url).read()
@@ -75,12 +116,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df1 = df1.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -94,13 +147,16 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'all',
-        'location':'Burger37'
+        'meal':'breakfast & lunch & dinner',
+        'location': 'Burger37',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i
-df1.to_csv('Datasets/Burger_37.csv', sep=',', encoding='utf-8')
+    print loc+i+1
+df1.to_csv('Datasets/Burger_37.csv', sep=',', encoding='utf-8', index=False)
 
+loc += 10000
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=07&locationName=DEET%27S+PLACE++AT+DIETRICK&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Daily+Items"
 html = urllib.urlopen(url).read()
@@ -117,12 +173,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df2 = df2.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -136,13 +204,16 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'all',
-        'location':'Deets'
+        'meal':'breakfast & lunch & dinner',
+        'location': 'Deets',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i
-df2.to_csv('Datasets/Deets.csv', sep=',', encoding='utf-8')
+    print loc+i+1
+df2.to_csv('Datasets/Deets.csv', sep=',', encoding='utf-8', index=False)
 
+loc += 10000
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=15&locationName=D2+AT+DIETRICK+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Breakfast"
 html = urllib.urlopen(url).read()
@@ -159,12 +230,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df3 = df3.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -178,11 +261,13 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'breakfast',
-        'location':'D2'
+        'location': 'D2',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i
+    print loc+i+1
     
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=15&locationName=D2+AT+DIETRICK+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Lunch"
 html = urllib.urlopen(url).read()
@@ -199,12 +284,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df3 = df3.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -218,11 +315,13 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'lunch',
-        'location':'D2'
+        'location': 'D2',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i 
+    print loc+i+1 
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=15&locationName=D2+AT+DIETRICK+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Dinner"
 html = urllib.urlopen(url).read()
@@ -239,12 +338,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df3 = df3.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -258,16 +369,17 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'dinner',
-        'location':'D2'
+        'meal':'Dinner',
+        'location': 'D2',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i     
+    print loc+i+1     
     
-df3.to_csv('Datasets/D2.csv', sep=',', encoding='utf-8')
+df3.to_csv('Datasets/D2.csv', sep=',', encoding='utf-8', index=False)
 
-
-
+loc += 10000
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=13&locationName=DXPRESS+AT+DIETRICK+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Breakfast"
 html = urllib.urlopen(url).read()
@@ -284,12 +396,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df4 = df4.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -303,11 +427,13 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'breakfast',
-        'location':'Dxpress'
+        'location':'Dxpress',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i
+    print loc+i+1
     
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=13&locationName=DXPRESS+AT+DIETRICK+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Lunch+%26+Dinner"
 html = urllib.urlopen(url).read()
@@ -324,12 +450,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df4 = df4.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -343,15 +481,17 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'lunch & dinner',
-        'location':'Dxpress'
+        'location':'Dxpress',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i 
+    print loc+i+1 
     
-df4.to_csv('Datasets/Dxpress.csv', sep=',', encoding='utf-8')
+df4.to_csv('Datasets/Dxpress.csv', sep=',', encoding='utf-8', index=False)
 
-
+loc += 10000
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=09&locationName=FOOD+CRT%2f+HOKIE+GRILL+AT+OWENS+&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Daily+Items"
 html = urllib.urlopen(url).read()
@@ -368,12 +508,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df5 = df5.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -387,15 +539,17 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
-        'meal':'all',
-        'location':'Grill_Owens'
+        'meal':'breakfast & lunch & dinner',
+        'location':'Grill_Owens',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i 
+    print loc+i+1 
     
-df5.to_csv('Datasets/Grill_Owens.csv', sep=',', encoding='utf-8')
+df5.to_csv('Datasets/Grill_Owens.csv', sep=',', encoding='utf-8',index=False)
 
-
+loc += 10000
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=14&locationName=TURNER+PLACE+AT+LAVERY+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Breakfast"
 html = urllib.urlopen(url).read()
@@ -412,12 +566,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df6 = df6.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -431,11 +597,13 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'breakfast',
-        'location':'Turner'
+        'location':'Turner',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i
+    print loc+i+1
     
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=14&locationName=TURNER+PLACE+AT+LAVERY+HALL&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Lunch+%26+Dinner"
 html = urllib.urlopen(url).read()
@@ -452,12 +620,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df6 = df6.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -471,16 +651,18 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'lunch & dinner',
-        'location':'turner'
+        'location':'Turner',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i 
+    print loc+i+1 
     
-df6.to_csv('Datasets/Turner.csv', sep=',', encoding='utf-8')
+df6.to_csv('Datasets/Turner.csv', sep=',', encoding='utf-8',index=False)
 
 
-
+loc += 10000
 
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=19&locationName=VET+MED+CAFE++AT+VMRCVM+&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Breakfast"
 html = urllib.urlopen(url).read()
@@ -497,12 +679,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df7 = df7.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -516,11 +710,13 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'breakfast',
-        'location':'Vet_Cafe'
+        'location':'Vet_Cafe',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i
+    print loc+i+1
     
 url= "http://foodpro.dsa.vt.edu/FoodPro.NET/longmenu.aspx?sName=Virginia+Tech+Dining+Services&locationNum=19&locationName=VET+MED+CAFE++AT+VMRCVM+&naFlag=1&WeeksMenus=This+Week%27s+Menus&dtdate="+dtdate[1]+"%2f"+dtdate[2]+"%2f"+dtdate[0]+"&mealName=Lunch"
 html = urllib.urlopen(url).read()
@@ -537,12 +733,24 @@ for i in range(0,len(href)):
     s = [f.text for f in soupi.find_all('font',{'size':'5'})]
     n = soupi.find_all('font',{'size':'4'})
     v = soupi.find_all('font',{'size':'3'})
-    if s!=[] :
+    ingr = fff(soupi.find('span',{'class':'labelingredientsvalue'}))
+    allg = fff(soupi.find('span',{'class':'labelallergensvalue'}))
+    tags = []
+    if ingr != 'None':
+        inglist = "".join(c for c in ingr.lower() if c not in (',','.','?','!',';',':',')','(')).split(" ")
+        for word in inglist:
+            if (word in taglist) and (not word in tags) :
+                tags.append(word)
+    tag = "None"
+    if tags != [] :
+        tag = "".join(x+", " for x in tags)
+    if (len(s)==4 and len(n)==35 and len(v)==13) :
         df7 = df7.append({
+        'food_id': loc+i+1,
         'food_name': soupi.find('div',{'class':'labelrecipe'}).text,
         'serving_size': s[1],
-        'calories':s[2].split(u'\xa0')[1],
-        'fat_type':s[3].split(u'\xa0')[-1],
+        'calories': int(s[2].split(u'\xa0')[1]),
+        'fat_type': s[3].split(u'\xa0')[-1],
         'total_fat': n[1].text,
         'sat_fat': n[9].text,
         'trans_fat': n[17].text,
@@ -556,23 +764,34 @@ for i in range(0,len(href)):
         'iron': v[8].text.split(u'\xa0')[-1],
         'vaiu': v[10].text.split(u'\xa0')[-1],
         'vc': v[12].text.split(u'\xa0')[-1],
-        'ingredient': fff(soupi.find('span',{'class':'labelingredientsvalue'})),
         'meal':'lunch',
-        'location':'Vet_Cafe'
+        'location':'Vet_Cafe',
+        'allergen': allg,
+        'tag': tag,
+        'ingredient': ingr,
         }, ignore_index=True)
-    print i 
+    print loc+i+1 
     
-df7.to_csv('Datasets/Vet_Cafe.csv', sep=',', encoding='utf-8')
+df7.to_csv('Datasets/Vet_Cafe.csv', sep=',', encoding='utf-8',index=False)
 
 
-conn = MySQLdb.connect(host="localhost",    # your host, usually localhost
+
+db  = MySQLdb.connect(host="localhost",    # your host, usually localhost
                      user="root",         # your username
                      passwd="Wang8812321",  # your password
                      db="FlaskApp")        # name of the data base
 
-df = pd.concat([df,df1,df2,df3,df4,df5,df6,df7])
+dbc = db.cursor()
+
+db.set_character_set('utf8')
+dbc.execute('SET NAMES utf8;')
+dbc.execute('SET CHARACTER SET utf8;')
+dbc.execute('SET character_set_connection=utf8;')
 
 
-df.to_sql(con=conn,name='Food',if_exists='replace', flavor='mysql')
+df = pd.concat([df0,df1,df2,df3,df4,df5,df6,df7])
+
+
+df.to_sql(con=db,name='Food',if_exists='replace', flavor='mysql',index=False)
 
 print "Finished"
